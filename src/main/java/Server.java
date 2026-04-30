@@ -6,7 +6,7 @@ import java.util.Queue;
 public class Server {
     private final Queue<ClientHandler> matchmaking = new LinkedList<>();
 
-    public void start(int port) throws IOException {
+    public void start(int port) {
         try (ServerSocket socket = new ServerSocket(port)) {
             System.out.println("Server is listening on port " + port);
 
@@ -14,8 +14,8 @@ public class Server {
                 new ClientHandler(socket.accept(), this).start();
                 System.out.println("Client connected");
             }
-        } catch (RuntimeException e) {
-            throw new RuntimeException(e);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -36,7 +36,7 @@ public class Server {
     }
 
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         Server server = new Server();
         server.start(8080);
     }

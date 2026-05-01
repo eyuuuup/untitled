@@ -26,8 +26,8 @@ public class Server {
             ClientHandler p1 = matchmaking.poll();
             ClientHandler p2 = matchmaking.poll();
 
-            p1.out.println("Found match.");
-            p2.out.println("Found match.");
+            p1.broadcast("Found match.");
+            p2.broadcast("Found match.");
 
             System.out.println("Match found");
             MultiClient game = new MultiClient(p1, p2);

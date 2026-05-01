@@ -7,8 +7,8 @@ import java.util.Arrays;
 import java.util.List;
 
 public class ClientHandler extends Thread {
-    public final BufferedReader in;
-    public final PrintWriter out;
+    private final BufferedReader in;
+    private final PrintWriter out;
     private final Socket socket;
     private final Server server;
 
@@ -31,7 +31,7 @@ public class ClientHandler extends Thread {
                     break;
 
                 } else if (inputLine.equals("S")) {
-                    SoloClient game = new SoloClient(in, out);
+                    SoloClient game = new SoloClient(this);
                     game.runGame();
                     stopClient();
                 } else {
@@ -45,22 +45,6 @@ public class ClientHandler extends Thread {
 
     }
 
-    public String getMove() throws IOException {
-        String inputLine;
-        out.println("rock paper or scissors");
-        List<String> values = Arrays.asList("rock", "scissors", "paper");
-        while ((inputLine = in.readLine()) != null) {
-
-            if (values.contains(inputLine)) {
-                return inputLine;
-            } else {
-                out.println("I've never heard of " + inputLine + "...");;
-            }
-        }
-        return inputLine;
-    }
-
-
     public void stopClient() {
         try {
             socket.close();
@@ -68,5 +52,19 @@ public class ClientHandler extends Thread {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public void broadcast(String message) {
+        out.println(message);
+    }
+
+    public String receive() {
+        try {
+            return in.readLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "Failed to receive message.";
+        }
+
     }
 }

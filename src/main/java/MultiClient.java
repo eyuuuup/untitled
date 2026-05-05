@@ -1,10 +1,10 @@
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 
 public class MultiClient {
-    private final Map<String, String> d;
     private final ClientHandler p1;
     private final ClientHandler p2;
     private final ExecutorService executorServiceGameHandling;
@@ -12,23 +12,13 @@ public class MultiClient {
     public MultiClient(ClientHandler p1, ClientHandler p2, ExecutorService executorServiceGameHandling) {
         this.p1 = p1;
         this.p2 = p2;
-        this.d = new HashMap<>();
         this.executorServiceGameHandling = executorServiceGameHandling;
-        d.put("rock", "scissors");
-        d.put("scissors", "paper");
-        d.put("paper", "rock");
     }
 
     public void runGame() {
-        CompletableFuture<String> player1InputFuture = CompletableFuture.supplyAsync(() -> {
-            p1.broadcast("Make your move.");
-            return p1.receive();
-        }, executorServiceGameHandling);
+        CompletableFuture<Option> player1InputFuture = CompletableFuture.supplyAsync(p1::receiveMove, executorServiceGameHandling);
 
-        CompletableFuture<String> player2InputFuture = CompletableFuture.supplyAsync(() -> {
-            p2.broadcast("Make your move.");
-            return p2.receive();
-        }, executorServiceGameHandling);
+        CompletableFuture<Option> player2InputFuture = CompletableFuture.supplyAsync(p2::receiveMove, executorServiceGameHandling);
 
         player1InputFuture.whenComplete((result, exception) -> {
             if (!player2InputFuture.isDone()) {
@@ -42,14 +32,14 @@ public class MultiClient {
             }
         });
 
-        String moveP1 = player1InputFuture.join();
-        String moveP2 = player2InputFuture.join();
+        Option moveP1 = player1InputFuture.join();
+        Option moveP2 = player2InputFuture.join();
 
         broadcastAll("Player 1 chose: " + moveP1 + " and Player 2 chose: " + moveP2);
 
         if (moveP1.equals(moveP2)) {
             broadcastAll("It's a tie..");
-        } else if (moveP1.equals(d.get(moveP2))) {
+        } else if (moveP1.defeats(moveP2)) {
             broadcastAll("Player 1 wins.");
         } else {
             broadcastAll("Player 2 wins.");

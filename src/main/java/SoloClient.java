@@ -1,8 +1,7 @@
 import java.util.Optional;
 import java.util.Random;
 
-public class SoloClient implements Game {
-    private static final String USER_INPUT_LINE_QUIT = "q";
+public class SoloClient {
 
     private final ClientHandler p1;
 
@@ -14,21 +13,9 @@ public class SoloClient implements Game {
         p1.broadcast("You ever heard of rock paper scissors?");
         Random r = new Random();
 
-        String userInputLine;
-        while ((userInputLine = p1.receive()) != null) {
+        Option userOption;
+        while ((userOption = p1.receiveMove()) != null) {
 
-            if (USER_INPUT_LINE_QUIT.equals(userInputLine)) {
-                p1.broadcast("Connection closing..");
-                break;
-            }
-
-            Optional<Option> userOptionOptional = OptionParser.parseFromUserInputLine(userInputLine);
-            if (userOptionOptional.isEmpty()) {
-                p1.broadcast("I've never heard of " + userInputLine + "...");
-                continue;
-            }
-
-            Option userOption = userOptionOptional.get();
 
             Option cpuOption = Option.values()[r.nextInt(Option.values().length)];
             p1.broadcast("I choose " + cpuOption);

@@ -3,8 +3,11 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.Optional;
 
 public class ClientHandler {
+    private static final String USER_INPUT_LINE_QUIT = "q";
+
     private final BufferedReader in;
     private final PrintWriter out;
     private final Socket socket;
@@ -17,7 +20,7 @@ public class ClientHandler {
         this.server = server;
     }
 
-    public void run() {
+    public void handleClient() {
         try {
             String inputLine;
             out.println("(S)ingle-player game or (M)ulti-player game?");
@@ -64,6 +67,33 @@ public class ClientHandler {
             return "Failed to receive message.";
         }
 
+    }
+
+    public Option receiveMove() {
+        try {
+            String userInputLine;
+            out.println("Make your move.");
+            while ((userInputLine = in.readLine()) != null) {
+
+                if (USER_INPUT_LINE_QUIT.equals(userInputLine)) {
+                    out.println("Connection closing..");
+                    stopClient();
+                }
+
+                Optional<Option> userOptionOptional = OptionParser.parseFromUserInputLine(userInputLine);
+
+                if (userOptionOptional.isEmpty()) {
+                    out.println("I've never heard of " + userInputLine + "...");
+                    continue;
+                }
+
+                return userOptionOptional.get();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        // seems bad?
+        return null;
     }
 
     public Socket getSocket() {

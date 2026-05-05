@@ -20,7 +20,7 @@ public class Server {
                     Socket socket = serverSocket.accept();
                     executorServiceGameHandling.submit(() -> {
                         try {
-                            new ClientHandler(socket, this).run();
+                            new ClientHandler(socket, this).handleClient();
                         } catch (IOException e) {
                             throw new RuntimeException(e);
                         }
@@ -58,6 +58,6 @@ public class Server {
 
     public static void main(String[] args) {
         Server server = new Server();
-        server.start(9876);
+        server.start(8080);
     }
 }

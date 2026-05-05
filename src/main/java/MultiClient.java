@@ -1,32 +1,49 @@
-import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
 
 public class MultiClient {
     private final Map<String, String> d;
     private final ClientHandler p1;
     private final ClientHandler p2;
+    private final ExecutorService executorServiceGameHandling;
 
-    public MultiClient(ClientHandler p1, ClientHandler p2) {
+    public MultiClient(ClientHandler p1, ClientHandler p2, ExecutorService executorServiceGameHandling) {
         this.p1 = p1;
         this.p2 = p2;
         this.d = new HashMap<>();
+        this.executorServiceGameHandling = executorServiceGameHandling;
         d.put("rock", "scissors");
         d.put("scissors", "paper");
         d.put("paper", "rock");
     }
 
     public void runGame() {
-        p1.broadcast("Make your move.");
-        p2.broadcast("Waiting for player 1 to make a move...");
-        String moveP1 = p1.receive();
+        CompletableFuture<String> player1InputFuture = CompletableFuture.supplyAsync(() -> {
+            p1.broadcast("Make your move.");
+            return p1.receive();
+        }, executorServiceGameHandling);
 
-        p2.broadcast("Make your move.");
-        p1.broadcast("Waiting for player 2 to make a move...");
+        CompletableFuture<String> player2InputFuture = CompletableFuture.supplyAsync(() -> {
+            p2.broadcast("Make your move.");
+            return p2.receive();
+        }, executorServiceGameHandling);
 
-        String moveP2 = p2.receive();
+        player1InputFuture.whenComplete((result, exception) -> {
+            if (!player2InputFuture.isDone()) {
+                p1.broadcast("Waiting for player 2 to make a move...");
+            }
+        });
 
+        player2InputFuture.whenComplete((result, exception) -> {
+            if (!player1InputFuture.isDone()) {
+                p2.broadcast("Waiting for player 2 to make a move...");
+            }
+        });
+
+        String moveP1 = player1InputFuture.join();
+        String moveP2 = player2InputFuture.join();
 
         broadcastAll("Player 1 chose: " + moveP1 + " and Player 2 chose: " + moveP2);
 

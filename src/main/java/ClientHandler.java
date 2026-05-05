@@ -3,10 +3,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.Arrays;
-import java.util.List;
 
-public class ClientHandler extends Thread {
+public class ClientHandler {
     private final BufferedReader in;
     private final PrintWriter out;
     private final Socket socket;
@@ -66,5 +64,9 @@ public class ClientHandler extends Thread {
             return "Failed to receive message.";
         }
 
+    }
+
+    public Socket getSocket() {
+        return socket;
     }
 }

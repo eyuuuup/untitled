@@ -4,58 +4,46 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
-public class SoloClient {
-    private final BufferedReader in ;
-    private final PrintWriter out;
+public class SoloClient implements Game {
+    private final ClientHandler p1;
+    private final Map<String, String> d;
 
-    public SoloClient(BufferedReader in, PrintWriter out) {
-        this.in = in;
-        this.out = out;
+    public SoloClient(ClientHandler p1) {
+        this.p1 = p1;
+        this.d = new HashMap<>();
+        d.put("rock", "scissors");
+        d.put("scissors", "paper");
+        d.put("paper", "rock");
     }
 
     public void runGame() {
-        try {
-
-
-            Map<String, String> d = new HashMap<>();
-            d.put("rock", "scissors");
-            d.put("scissors", "paper");
-            d.put("paper", "rock");
-
-            out.println("You ever heard of rock paper scissors?");
+            p1.broadcast("You ever heard of rock paper scissors?");
             Random r = new Random();
             String[] values = {"rock", "scissors", "paper"};
 
-
             String inputLine;
-            while ((inputLine = in.readLine()) != null) {
+            while ((inputLine = p1.receive()) != null) {
+
                 if ("q".equals(inputLine)) {
-                    out.println("Connection closing..");
+                    p1.broadcast("Connection closing..");
                     break;
                 }
 
                 if (d.get(inputLine) == null) {
-                    out.println("I've never heard of " + inputLine + "...");
+                    p1.broadcast("I've never heard of " + inputLine + "...");
                     continue;
                 }
 
                 String move = values[r.nextInt(values.length)];
-                out.println("I choose " + move);
+                p1.broadcast("I choose " + move);
 
                 if(inputLine.equals(move)) {
-                    out.println("It's a tie..");
+                    p1.broadcast("It's a tie..");
                 } else if (inputLine.equals(d.get(move))) {
-                    out.println("I win.");
+                    p1.broadcast("I win.");
                 } else {
-                    out.println("I lost...");
+                    p1.broadcast("I lost...");
                 }
-
-
             }
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
     }
 }

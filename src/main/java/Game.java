@@ -1,5 +1,8 @@
+import java.util.HashMap;
+import java.util.Map;
+
 public interface Game {
-    public void runGame();
-    public void broadcast(String message);
-    public String[] receive();
+
+    void runGame();
+
 }

@@ -20,7 +20,7 @@ public class Server {
                     Socket socket = serverSocket.accept();
                     executorServiceGameHandling.submit(() -> {
                         try {
-                            new ClientHandler(socket, this).handleClient();
+                            new ClientHandler(socket, this).intake();
                         } catch (IOException e) {
                             throw new RuntimeException(e);
                         }

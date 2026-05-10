@@ -26,23 +26,22 @@ public class ClientHandler {
 
     public void intake() {
         try {
-            String username;
 
             out.println("Register username");
-            while ((username = in.readLine()) != null) {
-                out.println("Is " + username + " correct? (y/n)");
+            String username = in.readLine();
+            out.println("Is " + username + " correct? (y/n)");
 
-                String choice;
+            String choice;
 
-                while ((choice = in.readLine()) != null) {
-                    if (USER_INPUT_LINE_AGREE.equals(choice)) {
-                        user = new User(username);
-                        handleClient();
-                    } else if (USER_INPUT_LINE_DISAGREE.equals(choice)) {
-                        intake();
-                    } else {
-                        out.println(USER_INPUT_LINE_WRONG_CHOICE);
-                    }
+            while ((choice = in.readLine()) != null) {
+                if (USER_INPUT_LINE_AGREE.equals(choice)) {
+                    user = new User(username);
+                    handleClient();
+                    break;
+                } else if (USER_INPUT_LINE_DISAGREE.equals(choice)) {
+                    intake();
+                } else {
+                    out.println(USER_INPUT_LINE_WRONG_CHOICE);
                 }
             }
 
@@ -79,7 +78,10 @@ public class ClientHandler {
 
     public void stopClient() {
         try {
-            out.println("Your wins: " + user.wins + " and losses: " + user.losses);
+            out.println("Winrate: " + user.winrate() + "%");
+            out.println("Wins: " + user.wins);
+            out.println("Ties: " + user.ties);
+            out.println("Losses: " + user.losses);
             socket.close();
             System.out.println("Client disconnected.");
         } catch (IOException e) {
@@ -129,7 +131,4 @@ public class ClientHandler {
         return userOption;
     }
 
-    public Socket getSocket() {
-        return socket;
-    }
 }

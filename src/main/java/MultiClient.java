@@ -39,6 +39,8 @@ public class MultiClient {
 
         if (moveP1.equals(moveP2)) {
             broadcastAll("It's a tie..");
+            p1.user.tiedGame();
+            p2.user.tiedGame();
         } else if (moveP1.defeats(moveP2)) {
             broadcastAll("Player 1 wins.");
             p1.user.wonGame();

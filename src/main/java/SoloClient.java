@@ -22,6 +22,7 @@ public class SoloClient {
 
             if (cpuOption.equals(userOption)) {
                 p1.broadcast("It's a tie..");
+                p1.user.tiedGame();
             } else if (cpuOption.defeats(userOption)) {
                 p1.broadcast("I win.");
                 p1.user.lostGame();

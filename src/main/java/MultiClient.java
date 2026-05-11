@@ -22,37 +22,54 @@ public class MultiClient {
 
         player1InputFuture.whenComplete((result, exception) -> {
             if (!player2InputFuture.isDone()) {
-                p1.broadcast("Waiting for player 2 to make a move...");
+                p1.broadcast("Waiting for " + p2.user.username + " to make a move...");
             }
         });
 
         player2InputFuture.whenComplete((result, exception) -> {
             if (!player1InputFuture.isDone()) {
-                p2.broadcast("Waiting for player 2 to make a move...");
+                p2.broadcast("Waiting for " + p1.user.username + " to make a move...");
             }
         });
 
         Option moveP1 = player1InputFuture.join();
         Option moveP2 = player2InputFuture.join();
 
-        broadcastAll("Player 1 chose: " + moveP1 + " and Player 2 chose: " + moveP2);
+        broadcastAll(p1.user.username + " chose: " + moveP1 + " and " + p2.user.username + " chose: " + moveP2);
 
         if (moveP1.equals(moveP2)) {
             broadcastAll("It's a tie..");
             p1.user.tiedGame();
             p2.user.tiedGame();
         } else if (moveP1.defeats(moveP2)) {
-            broadcastAll("Player 1 wins.");
+            broadcastAll(p1.user.username + " wins.");
             p1.user.wonGame();
             p2.user.lostGame();
         } else {
-            broadcastAll("Player 2 wins.");
+            broadcastAll(p2.user.username + " wins.");
             p1.user.lostGame();
             p2.user.wonGame();
         }
 
-        p1.stopClient();
-        p2.stopClient();
+        broadcastAll("Rematch? y/n");
+
+        CompletableFuture<String> player1RematchFuture = CompletableFuture.supplyAsync(p1::receive, executorServiceGameHandling);
+
+        CompletableFuture<String> player2RematchFuture = CompletableFuture.supplyAsync(p2::receive, executorServiceGameHandling);
+
+        String p1Rematch = player1RematchFuture.join();
+        String p2Rematch = player2RematchFuture.join();
+
+        if (p1Rematch.equals("y") && p2Rematch.equals("y")) {
+            broadcastAll("Rematched accepted.");
+            runGame();
+        } else {
+            broadcastAll("Rematch declined.");
+            p1.stopClient();
+            p2.stopClient();
+        }
+
+
 
     }
 

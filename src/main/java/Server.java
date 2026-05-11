@@ -38,8 +38,8 @@ public class Server {
                     ClientHandler clientHandler1 = matchmaking.take();
                     ClientHandler clientHandler2 = matchmaking.take();
 
-                    clientHandler1.broadcast("Found match against " + clientHandler1.user.username);
-                    clientHandler2.broadcast("Found match against " + clientHandler2.user.username);
+                    clientHandler1.broadcast("Found match against " + clientHandler2.user.username);
+                    clientHandler2.broadcast("Found match against " + clientHandler1.user.username);
                     System.out.println("Match found for " + clientHandler1.user.username + " and " + clientHandler2.user.username);
                     executorServiceGameHandling.submit(() -> {
                         MultiClient game = new MultiClient(clientHandler1, clientHandler2, executorServiceGameHandling);

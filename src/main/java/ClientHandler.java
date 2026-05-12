@@ -7,17 +7,47 @@ import java.util.Optional;
 
 public class ClientHandler {
     private static final String USER_INPUT_LINE_QUIT = "q";
+    private static final String USER_INPUT_LINE_AGREE = "y";
+    private static final String USER_INPUT_LINE_DISAGREE = "n";
+    private static final String USER_INPUT_LINE_WRONG_CHOICE = "That's not a command...";
 
     private final BufferedReader in;
     private final PrintWriter out;
     private final Socket socket;
     private final Server server;
+    public User user;
 
     public ClientHandler(Socket socket, Server server) throws IOException {
         this.socket = socket;
         this.out = new PrintWriter(socket.getOutputStream(), true);
         this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         this.server = server;
+    }
+
+    public void intake() {
+        try {
+
+            out.println("Register username");
+            String username = in.readLine();
+            out.println("Is " + username + " correct? (y/n)");
+
+            String choice;
+
+            while ((choice = in.readLine()) != null) {
+                if (USER_INPUT_LINE_AGREE.equals(choice)) {
+                    user = new User(username);
+                    handleClient();
+                    break;
+                } else if (USER_INPUT_LINE_DISAGREE.equals(choice)) {
+                    intake();
+                } else {
+                    out.println(USER_INPUT_LINE_WRONG_CHOICE);
+                }
+            }
+
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+        }
     }
 
     public void handleClient() {
@@ -36,7 +66,7 @@ public class ClientHandler {
                     game.runGame();
                     stopClient();
                 } else {
-                    out.println("That's not a command...");
+                    out.println(USER_INPUT_LINE_WRONG_CHOICE);
                 }
             }
 
@@ -48,10 +78,14 @@ public class ClientHandler {
 
     public void stopClient() {
         try {
+            out.println("Winrate: " + user.winrate() + "%");
+            out.println("Wins: " + user.wins);
+            out.println("Ties: " + user.ties);
+            out.println("Losses: " + user.losses);
             socket.close();
             System.out.println("Client disconnected.");
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            System.err.println(e.getMessage());
         }
     }
 
@@ -63,13 +97,14 @@ public class ClientHandler {
         try {
             return in.readLine();
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println(e.getMessage());
             return "Failed to receive message.";
         }
 
     }
 
     public Option receiveMove() {
+        Option userOption = null;
         try {
             String userInputLine;
             out.println("Make your move.");
@@ -86,17 +121,14 @@ public class ClientHandler {
                     out.println("I've never heard of " + userInputLine + "...");
                     continue;
                 }
-
-                return userOptionOptional.get();
+                userOption = userOptionOptional.get();
+    
+                return userOption;
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println(e.getMessage());
         }
-        // seems bad?
-        return null;
+        return userOption;
     }
 
-    public Socket getSocket() {
-        return socket;
-    }
 }

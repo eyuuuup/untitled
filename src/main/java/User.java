@@ -29,6 +29,6 @@ public class User {
             return 0.0;
         }
 
-        return  ((double) wins / totalGames()) * 100;
+        return Math.round(((double) wins / totalGames()) * 100);
     }
 }

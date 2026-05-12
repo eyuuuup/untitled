@@ -78,10 +78,13 @@ public class ClientHandler {
 
     public void stopClient() {
         try {
-            out.println("Winrate: " + user.winrate() + "%");
-            out.println("Wins: " + user.wins);
-            out.println("Ties: " + user.ties);
-            out.println("Losses: " + user.losses);
+
+            String output = "Winrate: " + user.winrate() + "%" +
+                    "\nWins: " +user.wins +
+                    "\nTies: " + user.ties +
+                    "\nLosses: " + user.losses;
+            out.println(output);
+
             socket.close();
             System.out.println("Client disconnected.");
         } catch (IOException e) {

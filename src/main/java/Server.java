@@ -28,7 +28,7 @@ public class Server {
                     System.out.println("Client connected" + socket.getRemoteSocketAddress());
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                System.err.println(e.getMessage());
             }
         });
 
@@ -58,6 +58,6 @@ public class Server {
 
     public static void main(String[] args) {
         Server server = new Server();
-        server.start(8080);
+        server.start(7194);
     }
 }

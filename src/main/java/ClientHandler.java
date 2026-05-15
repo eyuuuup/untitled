@@ -9,6 +9,7 @@ public class ClientHandler {
     private static final String USER_INPUT_LINE_QUIT = "q";
     private static final String USER_INPUT_LINE_AGREE = "y";
     private static final String USER_INPUT_LINE_DISAGREE = "n";
+    private static final String USER_INPUT_LINE_MENU = "m";
     private static final String USER_INPUT_LINE_WRONG_CHOICE = "That's not a command...";
 
     private final BufferedReader in;
@@ -36,6 +37,7 @@ public class ClientHandler {
             while ((choice = in.readLine()) != null) {
                 if (USER_INPUT_LINE_AGREE.equals(choice)) {
                     user = new User(username);
+                    server.memory.putUser(user);
                     handleClient();
                     break;
                 } else if (USER_INPUT_LINE_DISAGREE.equals(choice)) {
@@ -54,17 +56,17 @@ public class ClientHandler {
         try {
             String inputLine;
             out.println("(S)ingle-player game or (M)ulti-player game?");
+            
             while ((inputLine = in.readLine()) != null) {
 
                 if (inputLine.equals("M") ) {
                     out.println("Searching for a match...");
                     server.joinQueue(this);
                     break;
-
                 } else if (inputLine.equals("S")) {
                     SoloClient game = new SoloClient(this);
                     game.runGame();
-                    stopClient();
+                    break;
                 } else {
                     out.println(USER_INPUT_LINE_WRONG_CHOICE);
                 }
@@ -78,13 +80,7 @@ public class ClientHandler {
 
     public void stopClient() {
         try {
-
-            String output = "Winrate: " + user.winrate() + "%" +
-                    "\nWins: " +user.wins +
-                    "\nTies: " + user.ties +
-                    "\nLosses: " + user.losses;
-            out.println(output);
-
+            user.outputStats();
             socket.close();
             System.out.println("Client disconnected.");
         } catch (IOException e) {
@@ -116,6 +112,11 @@ public class ClientHandler {
                 if (USER_INPUT_LINE_QUIT.equals(userInputLine)) {
                     out.println("Connection closing..");
                     stopClient();
+                }
+
+                if (USER_INPUT_LINE_MENU.equals(userInputLine)) {
+                    out.println("Back to menu.");
+                    handleClient();
                 }
 
                 Optional<Option> userOptionOptional = OptionParser.parseFromUserInputLine(userInputLine);

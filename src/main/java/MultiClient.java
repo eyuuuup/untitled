@@ -65,12 +65,9 @@ public class MultiClient {
             runGame();
         } else {
             broadcastAll("Rematch declined.");
-            p1.stopClient();
-            p2.stopClient();
+            executorServiceGameHandling.submit(p1::handleClient);
+            executorServiceGameHandling.submit(p2::handleClient);
         }
-
-
-
     }
 
     public void broadcastAll(String msg) {

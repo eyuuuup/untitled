@@ -10,6 +10,7 @@ public class Server {
     private final ExecutorService executorServiceAcceptor = Executors.newSingleThreadExecutor();
     private final ExecutorService executorServiceMatchmaker = Executors.newSingleThreadExecutor();
     private final ExecutorService executorServiceGameHandling = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 10);
+    public final MemoryStorage memory = new MemoryStorage();
 
     public void start(int port) {
         executorServiceAcceptor.submit(() -> {

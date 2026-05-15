@@ -31,4 +31,21 @@ public class User {
 
         return Math.round(((double) wins / totalGames()) * 100);
     }
+
+    public String outputStats() {
+        String output = "Winrate: " + winrate() + "%" +
+                "\nWins: " + wins +
+                "\nTies: " + ties +
+                "\nLosses: " + losses;
+        return output;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+
+        return username.equals(((User) obj).username);
+    }
 }

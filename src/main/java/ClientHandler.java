@@ -38,6 +38,8 @@ public class ClientHandler {
                 if (USER_INPUT_LINE_AGREE.equals(choice)) {
                     user = new User(username);
                     server.memory.putUser(user);
+                    System.out.printf("User %s is now registered%n", user.username);
+                    out.println(String.format("There are %d players registered%n", server.memory.totalUsers()));
                     handleClient();
                     break;
                 } else if (USER_INPUT_LINE_DISAGREE.equals(choice)) {
@@ -55,8 +57,8 @@ public class ClientHandler {
     public void handleClient() {
         try {
             String inputLine;
-            out.println("(S)ingle-player game or (M)ulti-player game?");
-            
+            out.println("(S)ingle-player game, (M)ulti-player game or (ST)ats?");
+
             while ((inputLine = in.readLine()) != null) {
 
                 if (inputLine.equals("M") ) {
@@ -67,7 +69,12 @@ public class ClientHandler {
                     SoloClient game = new SoloClient(this);
                     game.runGame();
                     break;
-                } else {
+                } else if (inputLine.equals("ST")) {
+                    out.println(server.memory.getUser(user.username).outputStats());
+                } else if (inputLine.equals(USER_INPUT_LINE_QUIT)) {
+                    stopClient();
+                }
+                else {
                     out.println(USER_INPUT_LINE_WRONG_CHOICE);
                 }
             }
@@ -81,6 +88,7 @@ public class ClientHandler {
     public void stopClient() {
         try {
             user.outputStats();
+            server.memory.exit();
             socket.close();
             System.out.println("Client disconnected.");
         } catch (IOException e) {

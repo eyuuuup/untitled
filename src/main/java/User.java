@@ -33,11 +33,10 @@ public class User {
     }
 
     public String outputStats() {
-        String output = "Winrate: " + winrate() + "%" +
+        return "Winrate: " + winrate() + "%" +
                 "\nWins: " + wins +
                 "\nTies: " + ties +
                 "\nLosses: " + losses;
-        return output;
     }
 
     @Override

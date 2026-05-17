@@ -1,3 +1,4 @@
+import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.ObjectMapper;
 
 import java.io.File;
@@ -7,7 +8,7 @@ import java.util.Map;
 
 
 public class JSONStorage implements Storage{
-    private final Map<String, User> users;
+    private Map<String, User> users;
     private final ObjectMapper objectMapper;
 
     public JSONStorage() {
@@ -15,7 +16,17 @@ public class JSONStorage implements Storage{
         objectMapper = new ObjectMapper();
     }
 
+    public void init() {
+        File jsonFile = new File("users.json");
+        if(jsonFile.exists()) {
+            users = objectMapper.readValue(jsonFile, new TypeReference<>() {});
+            System.out.println(users);
+        }
+
+    }
+
     public User getUser(String username) {
+        System.out.println(users.get(username));
         return users.get(username);
     }
 
@@ -31,7 +42,7 @@ public class JSONStorage implements Storage{
         try {
             File jsonFile = new File("users.json");
             if(jsonFile.createNewFile()) {
-                objectMapper.writeValue(jsonFile, users.get("Felix"));
+                objectMapper.writeValue(jsonFile, users);
                 System.out.println("File created");
             } else {
                 System.out.println("File already exists.");

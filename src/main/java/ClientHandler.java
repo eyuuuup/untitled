@@ -36,8 +36,14 @@ public class ClientHandler {
 
             while ((choice = in.readLine()) != null) {
                 if (USER_INPUT_LINE_AGREE.equals(choice)) {
-                    user = new User(username);
-                    server.memory.putUser(user);
+
+                    if (server.memory.getUser(username) == null) {
+                        user = new User(username);
+                        server.memory.putUser(user);
+                    } else {
+                        user = server.memory.getUser(username);
+                    }
+
                     System.out.printf("User %s is now registered%n", user.username);
                     out.println(String.format("There are %d players registered%n", server.memory.totalUsers()));
                     handleClient();
@@ -49,7 +55,7 @@ public class ClientHandler {
                 }
             }
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             System.err.println(e.getMessage());
         }
     }

@@ -1,10 +1,14 @@
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class User {
     public String username;
     public int wins;
     public int ties;
     public int losses;
 
-    public User(String username) {
+    @JsonCreator
+    public User(@JsonProperty("username") String username) {
         this.username = username;
     }
 

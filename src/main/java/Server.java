@@ -10,9 +10,10 @@ public class Server {
     private final ExecutorService executorServiceAcceptor = Executors.newSingleThreadExecutor();
     private final ExecutorService executorServiceMatchmaker = Executors.newSingleThreadExecutor();
     private final ExecutorService executorServiceGameHandling = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 10);
-    public final Storage memory = new JSONStorage();
+    public final JSONStorage memory = new JSONStorage();
 
     public void start(int port) {
+        memory.init();
         executorServiceAcceptor.submit(() -> {
             try (ServerSocket serverSocket = new ServerSocket(port)) {
                 System.out.println("Server is listening on port " + port);

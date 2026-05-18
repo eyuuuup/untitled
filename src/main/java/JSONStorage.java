@@ -20,13 +20,14 @@ public class JSONStorage implements Storage{
         File jsonFile = new File("users.json");
         if(jsonFile.exists()) {
             users = objectMapper.readValue(jsonFile, new TypeReference<>() {});
-            System.out.println(users);
+            System.out.println("Users loaded into memory.");
+        } else {
+            System.out.println("Userbase not found.");
         }
 
     }
 
     public User getUser(String username) {
-        System.out.println(users.get(username));
         return users.get(username);
     }
 
@@ -42,11 +43,11 @@ public class JSONStorage implements Storage{
         try {
             File jsonFile = new File("users.json");
             if(jsonFile.createNewFile()) {
-                objectMapper.writeValue(jsonFile, users);
                 System.out.println("File created");
             } else {
-                System.out.println("File already exists.");
+                System.out.println("File updated.");
             }
+            objectMapper.writeValue(jsonFile, users);
         } catch (IOException e) {
             System.err.println(e.getMessage());
         }

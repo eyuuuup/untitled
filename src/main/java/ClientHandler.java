@@ -46,6 +46,7 @@ public class ClientHandler {
 
                     System.out.printf("User %s is now registered%n", user.username);
                     out.println(String.format("There are %d players registered%n", server.memory.totalUsers()));
+                    out.println("Don't forget the commands (q)uit and (m)enu.");
                     handleClient();
                     break;
                 } else if (USER_INPUT_LINE_DISAGREE.equals(choice)) {

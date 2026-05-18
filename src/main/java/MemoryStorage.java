@@ -9,6 +9,10 @@ public class MemoryStorage implements Storage{
         users = new HashMap<>();
     }
 
+    public void init() {
+        System.out.println("Temporary memory initialized.");
+    }
+
     public User getUser(String username) {
         return users.get(username);
     }

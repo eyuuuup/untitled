@@ -7,4 +7,6 @@ public interface Storage {
     int totalUsers();
 
     void exit();
+
+    void init();
 }

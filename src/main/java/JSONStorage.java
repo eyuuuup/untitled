@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-public class JSONStorage implements Storage{
+public class JSONStorage implements Storage, AutoCloseable {
     private Map<String, User> users;
     private final ObjectMapper objectMapper;
 
@@ -20,7 +20,7 @@ public class JSONStorage implements Storage{
             users = objectMapper.readValue(jsonFile, new TypeReference<>() {});
             System.out.println("Users loaded into memory.");
         } else {
-            System.out.println("Userbase not found.");
+            System.out.println("Userbase not found, new file will be made.");
         }
     }
 
@@ -36,7 +36,8 @@ public class JSONStorage implements Storage{
         return users.size();
     }
 
-    public void exit() {
+    @Override
+    public void close() {
         try {
             File jsonFile = new File("users.json");
             if(jsonFile.createNewFile()) {
@@ -48,6 +49,5 @@ public class JSONStorage implements Storage{
         } catch (IOException e) {
             System.err.println(e.getMessage());
         }
-
     }
 }

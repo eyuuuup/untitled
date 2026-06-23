@@ -25,8 +25,8 @@ public class MemoryStorage implements Storage{
         return users.size();
     }
 
-    public void exit() {
+    @Override
+    public void close() {
         System.out.println("No persistence in user data.");
     }
-
 }

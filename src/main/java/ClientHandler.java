@@ -95,10 +95,10 @@ public class ClientHandler {
     public void stopClient() {
         try {
             user.outputStats();
-            server.memory.exit();
+            server.memory.close();
             socket.close();
             System.out.println("Client disconnected.");
-        } catch (IOException e) {
+        } catch (Exception e) {
             System.err.println(e.getMessage());
         }
     }

@@ -10,6 +10,7 @@ public class Server {
     private final ExecutorService executorServiceAcceptor = Executors.newSingleThreadExecutor();
     private final ExecutorService executorServiceMatchmaker = Executors.newSingleThreadExecutor();
     private final ExecutorService executorServiceGameHandling = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 10);
+    public final Storage memory = new JSONStorage();
 
     public void start(int port) {
         executorServiceAcceptor.submit(() -> {
@@ -28,7 +29,7 @@ public class Server {
                     System.out.println("Client connected" + socket.getRemoteSocketAddress());
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                System.err.println(e.getMessage());
             }
         });
 
@@ -58,6 +59,6 @@ public class Server {
 
     public static void main(String[] args) {
         Server server = new Server();
-        server.start(8080);
+        server.start(7194);
     }
 }

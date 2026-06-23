@@ -9,6 +9,7 @@ public class ClientHandler {
     private static final String USER_INPUT_LINE_QUIT = "q";
     private static final String USER_INPUT_LINE_AGREE = "y";
     private static final String USER_INPUT_LINE_DISAGREE = "n";
+    private static final String USER_INPUT_LINE_MENU = "m";
     private static final String USER_INPUT_LINE_WRONG_CHOICE = "That's not a command...";
 
     private final BufferedReader in;
@@ -35,7 +36,17 @@ public class ClientHandler {
 
             while ((choice = in.readLine()) != null) {
                 if (USER_INPUT_LINE_AGREE.equals(choice)) {
-                    user = new User(username);
+
+                    if (server.memory.getUser(username) == null) {
+                        user = new User(username);
+                        server.memory.putUser(user);
+                    } else {
+                        user = server.memory.getUser(username);
+                    }
+
+                    System.out.printf("User %s is now registered%n", user.username);
+                    out.println(String.format("There are %d players registered%n", server.memory.totalUsers()));
+                    out.println("Don't forget the commands (q)uit and (m)enu.");
                     handleClient();
                     break;
                 } else if (USER_INPUT_LINE_DISAGREE.equals(choice)) {
@@ -45,7 +56,7 @@ public class ClientHandler {
                 }
             }
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             System.err.println(e.getMessage());
         }
     }
@@ -53,19 +64,24 @@ public class ClientHandler {
     public void handleClient() {
         try {
             String inputLine;
-            out.println("(S)ingle-player game or (M)ulti-player game?");
+            out.println("(S)ingle-player game, (M)ulti-player game or (ST)ats?");
+
             while ((inputLine = in.readLine()) != null) {
 
                 if (inputLine.equals("M") ) {
                     out.println("Searching for a match...");
                     server.joinQueue(this);
                     break;
-
                 } else if (inputLine.equals("S")) {
                     SoloClient game = new SoloClient(this);
                     game.runGame();
+                    break;
+                } else if (inputLine.equals("ST")) {
+                    out.println(server.memory.getUser(user.username).outputStats());
+                } else if (inputLine.equals(USER_INPUT_LINE_QUIT)) {
                     stopClient();
-                } else {
+                }
+                else {
                     out.println(USER_INPUT_LINE_WRONG_CHOICE);
                 }
             }
@@ -78,13 +94,11 @@ public class ClientHandler {
 
     public void stopClient() {
         try {
-            out.println("Winrate: " + user.winrate() + "%");
-            out.println("Wins: " + user.wins);
-            out.println("Ties: " + user.ties);
-            out.println("Losses: " + user.losses);
+            user.outputStats();
+            server.memory.close();
             socket.close();
             System.out.println("Client disconnected.");
-        } catch (IOException e) {
+        } catch (Exception e) {
             System.err.println(e.getMessage());
         }
     }
@@ -113,6 +127,11 @@ public class ClientHandler {
                 if (USER_INPUT_LINE_QUIT.equals(userInputLine)) {
                     out.println("Connection closing..");
                     stopClient();
+                }
+
+                if (USER_INPUT_LINE_MENU.equals(userInputLine)) {
+                    out.println("Back to menu.");
+                    handleClient();
                 }
 
                 Optional<Option> userOptionOptional = OptionParser.parseFromUserInputLine(userInputLine);

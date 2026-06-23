@@ -1,10 +1,14 @@
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class User {
     public String username;
     public int wins;
     public int ties;
     public int losses;
 
-    public User(String username) {
+    @JsonCreator
+    public User(@JsonProperty("username") String username) {
         this.username = username;
     }
 
@@ -29,6 +33,22 @@ public class User {
             return 0.0;
         }
 
-        return  ((double) wins / totalGames()) * 100;
+        return Math.round(((double) wins / totalGames()) * 100);
+    }
+
+    public String outputStats() {
+        return "Winrate: " + winrate() + "%" +
+                "\nWins: " + wins +
+                "\nTies: " + ties +
+                "\nLosses: " + losses;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+
+        return username.equals(((User) obj).username);
     }
 }

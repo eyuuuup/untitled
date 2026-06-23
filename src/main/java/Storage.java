@@ -8,5 +8,4 @@ public interface Storage {
 
     void exit();
 
-    void init();
 }

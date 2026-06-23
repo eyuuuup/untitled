@@ -14,9 +14,7 @@ public class JSONStorage implements Storage{
     public JSONStorage() {
         users = new HashMap<>();
         objectMapper = new ObjectMapper();
-    }
 
-    public void init() {
         File jsonFile = new File("users.json");
         if(jsonFile.exists()) {
             users = objectMapper.readValue(jsonFile, new TypeReference<>() {});
@@ -24,7 +22,6 @@ public class JSONStorage implements Storage{
         } else {
             System.out.println("Userbase not found.");
         }
-
     }
 
     public User getUser(String username) {

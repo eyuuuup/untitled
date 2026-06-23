@@ -13,7 +13,6 @@ public class Server {
     public final Storage memory = new JSONStorage();
 
     public void start(int port) {
-        memory.init();
         executorServiceAcceptor.submit(() -> {
             try (ServerSocket serverSocket = new ServerSocket(port)) {
                 System.out.println("Server is listening on port " + port);

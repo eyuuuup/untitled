@@ -1,16 +1,18 @@
 import java.net.*;
 import java.io.*;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.*;
 
 public class Server {
     private final BlockingQueue<ClientHandler> matchmaking = new LinkedBlockingQueue<>();
     private final ExecutorService executorServiceAcceptor = Executors.newSingleThreadExecutor();
     private final ExecutorService executorServiceMatchmaker = Executors.newSingleThreadExecutor();
     private final ExecutorService executorServiceGameHandling = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 10);
-    public final Storage memory = new JSONStorage();
+    private final Storage memory = new JSONStorage();
+
+
+    public Storage getMemory() throws ExecutionException, InterruptedException {
+        return CompletableFuture.supplyAsync(() -> memory, executorServiceGameHandling).get();
+    }
 
     public void start(int port) {
         executorServiceAcceptor.submit(() -> {

@@ -37,15 +37,15 @@ public class ClientHandler {
             while ((choice = in.readLine()) != null) {
                 if (USER_INPUT_LINE_AGREE.equals(choice)) {
 
-                    if (server.memory.getUser(username) == null) {
+                    if (server.getMemory().getUser(username) == null) {
                         user = new User(username);
-                        server.memory.putUser(user);
+                        server.getMemory().putUser(user);
                     } else {
-                        user = server.memory.getUser(username);
+                        user = server.getMemory().getUser(username);
                     }
 
                     System.out.printf("User %s is now registered%n", user.username);
-                    out.println(String.format("There are %d players registered%n", server.memory.totalUsers()));
+                    out.println(String.format("There are %d players registered%n", server.getMemory().totalUsers()));
                     out.println("Don't forget the commands (q)uit and (m)enu.");
                     handleClient();
                     break;
@@ -77,7 +77,7 @@ public class ClientHandler {
                     game.runGame();
                     break;
                 } else if (inputLine.equals("ST")) {
-                    out.println(server.memory.getUser(user.username).outputStats());
+                    out.println(server.getMemory().getUser(user.username).outputStats());
                 } else if (inputLine.equals(USER_INPUT_LINE_QUIT)) {
                     stopClient();
                 }
@@ -86,7 +86,7 @@ public class ClientHandler {
                 }
             }
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             System.err.println(e.getMessage());
         }
 
@@ -95,7 +95,7 @@ public class ClientHandler {
     public void stopClient() {
         try {
             user.outputStats();
-            server.memory.close();
+            server.getMemory().close();
             socket.close();
             System.out.println("Client disconnected.");
         } catch (Exception e) {
@@ -132,6 +132,7 @@ public class ClientHandler {
                 if (USER_INPUT_LINE_MENU.equals(userInputLine)) {
                     out.println("Back to menu.");
                     handleClient();
+                    return userOption;
                 }
 
                 Optional<Option> userOptionOptional = OptionParser.parseFromUserInputLine(userInputLine);
@@ -141,7 +142,7 @@ public class ClientHandler {
                     continue;
                 }
                 userOption = userOptionOptional.get();
-    
+
                 return userOption;
             }
         } catch (IOException e) {

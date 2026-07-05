@@ -10,8 +10,8 @@ public class Server {
     private final Storage memory = new JSONStorage();
 
 
-    public Storage getMemory() throws ExecutionException, InterruptedException {
-        return CompletableFuture.supplyAsync(() -> memory, executorServiceGameHandling).get();
+    public Storage getMemory() {
+        return memory;
     }
 
     public void start(int port) {
